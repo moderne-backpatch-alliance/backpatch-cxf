@@ -18,9 +18,14 @@
  */
 package org.apache.cxf.transport.jms.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Properties;
 
 import javax.naming.Context;
+
+import org.apache.cxf.common.util.SystemPropertyAction;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,6 +49,55 @@ public class JndiHelperProtocolsTest {
     public void testAllowListedSchemesAccepted() {
         for (String scheme : new String[]{"vm", "tcp", "nio", "ssl", "http", "https", "ws", "wss"}) {
             new JndiHelper(env(scheme + "://localhost"));
+        }
+    }
+
+    @Test
+    public void testEmptyProviderUrlAccepted() {
+        new JndiHelper(env(""));
+    }
+
+    @Test
+    public void testJmsProtocolsPropertyReplacesAllowList() throws Exception {
+        Class<?> helper = helperReadingJmsProtocols("remote+http, t3");
+        Assert.assertTrue(accepted(helper, "remote+http://localhost:8080"));
+        Assert.assertTrue(accepted(helper, "t3://localhost:7001"));
+        Assert.assertFalse(accepted(helper, "tcp://localhost:61616"));
+        Assert.assertFalse(accepted(helper, "ldap://localhost"));
+    }
+
+    @Test
+    public void testEmptyJmsProtocolsPropertyRejectsAll() throws Exception {
+        Class<?> helper = helperReadingJmsProtocols("");
+        Assert.assertFalse(accepted(helper, "tcp://localhost:61616"));
+        Assert.assertTrue(accepted(helper, ""));
+    }
+
+    // jms.protocols is read once, in JndiHelper's static initializer, so each value needs a fresh loader.
+    private static Class<?> helperReadingJmsProtocols(String value) throws Exception {
+        URL[] urls = {JndiHelper.class.getProtectionDomain().getCodeSource().getLocation(),
+                      SystemPropertyAction.class.getProtectionDomain().getCodeSource().getLocation()};
+        String previous = System.getProperty("jms.protocols");
+        System.setProperty("jms.protocols", value);
+        try {
+            return Class.forName(JndiHelper.class.getName(), true,
+                                 new URLClassLoader(urls, ClassLoader.getSystemClassLoader().getParent()));
+        } finally {
+            if (previous == null) {
+                System.clearProperty("jms.protocols");
+            } else {
+                System.setProperty("jms.protocols", previous);
+            }
+        }
+    }
+
+    private static boolean accepted(Class<?> helper, String providerUrl) throws Exception {
+        try {
+            helper.getConstructor(Properties.class).newInstance(env(providerUrl));
+            return true;
+        } catch (InvocationTargetException e) {
+            Assert.assertTrue(e.getCause() instanceof IllegalArgumentException);
+            return false;
         }
     }
 
