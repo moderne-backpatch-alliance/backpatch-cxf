@@ -804,4 +804,11 @@ public class AttachmentDeserializerTest {
             System.clearProperty(AttachmentUtil.ATTACHMENT_XOP_FOLLOW_URLS_PROPERTY);
         }
     }
+
+    @Test
+    public void testNonCidUrlHrefIsNotFollowed() {
+        final DataSource ds = AttachmentUtil
+            .getAttachmentDataSource("http://image.com/1.gif", Collections.emptyList());
+        assertThat(ds, instanceOf(LazyDataSource.class));
+    }
 }
