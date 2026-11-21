@@ -85,6 +85,7 @@ final class AttachmentDeserializerUtil {
         StringBuilder buffer = new StringBuilder(128);
         StringBuilder b = new StringBuilder(128);
         Map<String, List<String>> heads = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        int totalHeadersCollected = 0;
 
         // loop until we hit the end or a null line
         while (readLine(in, b, maxHeaderLength)) {
@@ -99,7 +100,12 @@ final class AttachmentDeserializerUtil {
             } else {
                 // if we have a line pending in the buffer, flush it
                 if (buffer.length() > 0) {
-                    addHeaderLine(heads, buffer, maxHeadersCount);
+                    if (addHeaderLine(heads, buffer, maxHeadersCount)) {
+                        totalHeadersCollected += 1;
+                        if (totalHeadersCollected > maxHeadersCount) {
+                            throw new IOException("The attachment contains more headers than are permitted");
+                        }
+                    }
                     buffer.setLength(0);
                 }
                 // add this to the accumulator
@@ -108,8 +114,11 @@ final class AttachmentDeserializerUtil {
         }
 
         // if we have a line pending in the buffer, flush it
-        if (buffer.length() > 0) {
-            addHeaderLine(heads, buffer, maxHeadersCount);
+        if (buffer.length() > 0 && addHeaderLine(heads, buffer, maxHeadersCount)) {
+            totalHeadersCollected += 1;
+            if (totalHeadersCollected > maxHeadersCount) {
+                throw new IOException("The attachment contains more headers than are permitted");
+            }
         }
         return heads;
     }
@@ -143,12 +152,12 @@ final class AttachmentDeserializerUtil {
         return buffer.length() != 0;
     }
 
-    private static void addHeaderLine(Map<String, List<String>> heads, StringBuilder line, 
+    private static boolean addHeaderLine(Map<String, List<String>> heads, StringBuilder line, 
             int maxHeadersCount) throws IOException {
         // null lines are a nop
         final int size = line.length();
         if (size == 0) {
-            return;
+            return false;
         }
         int separator = line.indexOf(":");
         final String name;
@@ -174,7 +183,7 @@ final class AttachmentDeserializerUtil {
             throw new IOException("The attachment contains more headers than are permitted");
         }
         List<String> v = heads.computeIfAbsent(name, k -> new ArrayList<>(1));
-        v.add(value);
+        return v.add(value);
     }
 
 
