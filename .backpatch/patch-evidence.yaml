@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 3.5.11.1-backpatch-00002
+release: 3.5.11.1-backpatch-00003
 baseline: v3.5.11+backpatch.baseline
 fixes:
   - cve: CVE-2025-48913
@@ -18,12 +18,20 @@ fixes:
     basis: adapted
     artifacts:
       - org.apache.cxf:cxf-rt-transports-jms
-    note: New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00002 (backpatch-cxf@4b4f74a).
+    note: Carried from 3.5.11.1-backpatch-00002; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00002 (backpatch-cxf@4b4f74a).
+  - cve: CVE-2026-50645
+    upstream_fix_url: https://github.com/advisories/GHSA-ghvc-7hp8-2g2v
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-50645
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-cxf/compare/01c8bb6~1...fcab83a
+    basis: adapted
+    artifacts:
+      - org.apache.cxf:cxf-core
+    note: New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00003 (backpatch-cxf@01c8bb6..fcab83a).
 tests:
-  commit: 4b4f74a0e1ebfa08d755011efaed387a2e0b587c
+  commit: fcab83a77392fa7114e42117c4aa772a3d97ca20
   command: mvn -B -T1 -pl rt/transports/jms -am -Dmaven.test.failure.ignore=true clean test
   runtime: openjdk version 1.8.0_382, Apache Maven 3.9.16
-  report: cxf-rt-transports-jms-3.5.11.1-backpatch-00002-tests.zip
-  report_sha256: b162ed441ddf4949571133c516a061bf9665b80ecc12c93e8322c1816ef39f66
+  report: cxf-core-3.5.11.1-backpatch-00003-tests.zip
+  report_sha256: a36f5755a2f9a13916ea79d713ee4654c035c9a12991d4ae1cb3eb64dde76687
   result: pass
-  note: 1012 tests at the patch commit, 1 of them skipped by the suite, 0 failed, 0 errors.
+  note: 1014 tests at the patch commit, 1 of them skipped by the suite, 0 failed, 0 errors.
