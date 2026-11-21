@@ -1,0 +1,21 @@
+schema: osera-patch-evidence/0.1.0
+producer: moderne
+release: 3.3.13.1-backpatch-00001
+baseline: v3.3.13+backpatch.baseline
+fixes:
+  - cve: CVE-2022-46364
+    upstream_fix_url: https://github.com/apache/cxf/commit/276f2a8720a6edab13010f657acd3f7bc249ca59
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2022-46364
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-cxf/compare/c3ba4ba~1...dfd6584
+    basis: adapted
+    artifacts:
+      - org.apache.cxf:cxf-core
+    note: "New in this release; ported onto 3.3.13; fixed at 3.3.13.1-backpatch-00001 (backpatch-cxf@c3ba4ba..dfd6584). cxf-core no longer follows a MTOM xop:Include href that is not a cid: reference, as upstream: a message whose attachment points at a URL gets no attachment data for it. Set the system property `org.apache.cxf.attachment.xop.follow.urls` to `true` to follow such URLs again; that brings back the exposure the fix closes."
+tests:
+  commit: dfd6584d3b14927ecb09efe4088dbf571008517a
+  command: mvn -B -T1 -pl core -am -Dmaven.test.failure.ignore=true clean test
+  runtime: openjdk version 1.8.0_382, Apache Maven 3.9.16
+  report: cxf-core-3.3.13.1-backpatch-00001-tests.zip
+  report_sha256: 8e1aace06442d7849512ccb8cbc3b3588b77aabdce976f67768f085ab1960261
+  result: pass
+  note: "540 tests at the patch commit, 0 of them skipped by the suite, 0 failed, 0 errors. Accepted verifier finding A: 57 classes of Central's cxf-core 3.3.13 sources jar are JAXB classes generated from core's schemas at build time, not in the tree; no source this port changes."
