@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 3.5.11.1-backpatch-00003
+release: 3.5.11.1-backpatch-00004
 baseline: v3.5.11+backpatch.baseline
 fixes:
   - cve: CVE-2025-48913
@@ -26,12 +26,20 @@ fixes:
     basis: adapted
     artifacts:
       - org.apache.cxf:cxf-core
-    note: New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00003 (backpatch-cxf@01c8bb6..fcab83a).
+    note: Carried from 3.5.11.1-backpatch-00003; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00003 (backpatch-cxf@01c8bb6..fcab83a).
+  - cve: CVE-2026-44930
+    upstream_fix_url: https://github.com/apache/cxf/commit/6d7267ecf86f380fb7b1ed1e6afa45aa5630b068
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-44930
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-cxf/commit/2df6eb8
+    basis: backport
+    artifacts:
+      - org.apache.cxf.services.xkms:cxf-services-xkms-x509-repo-ldap
+    note: New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00004 (backpatch-cxf@2df6eb8).
 tests:
-  commit: fcab83a77392fa7114e42117c4aa772a3d97ca20
-  command: mvn -B -T1 -pl rt/transports/jms -am -Dmaven.test.failure.ignore=true clean test
-  runtime: openjdk version 1.8.0_382, Apache Maven 3.9.16
-  report: cxf-core-3.5.11.1-backpatch-00003-tests.zip
-  report_sha256: a36f5755a2f9a13916ea79d713ee4654c035c9a12991d4ae1cb3eb64dde76687
+  commit: 2df6eb8795f6c1744593d8f4fbe1588e4765444b
+  command: mvn -B -T1 -pl rt/transports/jms,services/xkms/xkms-x509-repo-ldap,systests/ldap,core,rt/databinding/aegis,rt/ws/rm,tools/common,tools/wsdlto/databinding/jaxb,rt/rs/security/oauth-parent/oauth2,systests/rs-security -am -DskipTests -Dmaven.test.skip.exec=true install, then mvn -B -T1 -pl rt/transports/jms,services/xkms/xkms-x509-repo-ldap,systests/ldap,core,rt/databinding/aegis,rt/ws/rm,tools/common,tools/wsdlto/databinding/jaxb,rt/rs/security/oauth-parent/oauth2,systests/rs-security -Dsurefire.timeout=900 -Dmaven.test.failure.ignore=true verify (azul/zulu-openjdk:8, Maven 3.9.16, Central through Moderne's cache; the line's modules' tests only)
+  runtime: openjdk version 1.8.0_514 (Zulu, azul/zulu-openjdk:8 linux/arm64 container), Apache Maven 3.9.16
+  report: cxf-services-xkms-x509-repo-ldap-3.5.11.1-backpatch-00004-tests.zip
+  report_sha256: 3bee5b070c71b84834dee249adcf18b002400821c361fd95e73f477feae19e7b
   result: pass
-  note: 1014 tests at the patch commit, 1 of them skipped by the suite, 0 failed, 0 errors.
+  note: 2001 tests at the patch commit, 9 of them skipped by the suite, 0 failed, 0 errors. Suite of record in a Linux container (release/cxf-3.5/SUITE-ENV.md) with upstream's test-only certificate renewals 13fc94bb3c and 0dcfe16bab (test keystores only) applied first; the expired testutils certificates turned 79 signed/SAML tests red on 3.5.11 itself.
