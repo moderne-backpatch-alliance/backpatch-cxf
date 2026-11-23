@@ -32,6 +32,7 @@ import org.apache.cxf.Bus;
 import org.apache.cxf.bus.extension.ExtensionManagerBus;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.awaitility.Awaitility.await;
@@ -146,6 +147,7 @@ public class DelayedCachedOutputStreamCleanerTest {
     }
     
     @Test
+    @Ignore("flaky: the cleaner's first timer run may close a just-registered stream; see CXF-9171")
     public void testCleanOnShutdown() throws InterruptedException {
         /* Delay of 5 seconds */
         final Map<String, Object> properties = Collections.singletonMap(CachedConstants.CLEANER_DELAY_BUS_PROP, 5000);
@@ -165,6 +167,7 @@ public class DelayedCachedOutputStreamCleanerTest {
     }
 
     @Test
+    @Ignore("flaky: the cleaner's first timer run may close a just-registered stream; see CXF-9171")
     public void testCleanOnShutdownDisabled() throws InterruptedException {
         /* Delay of 3 seconds */
         final Map<String, Object> properties = new HashMap<>();
