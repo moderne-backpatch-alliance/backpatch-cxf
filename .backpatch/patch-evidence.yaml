@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 3.5.11.1-backpatch-00006
+release: 3.5.11.1-backpatch-00007
 baseline: v3.5.11+backpatch.baseline
 fixes:
   - cve: CVE-2025-48913
@@ -54,12 +54,28 @@ fixes:
     basis: adapted
     artifacts:
       - org.apache.cxf:cxf-rt-rs-security-oauth2
-    note: New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00006 (backpatch-cxf@ff75b5d).
+    note: Carried from 3.5.11.1-backpatch-00006; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00006 (backpatch-cxf@ff75b5d).
+  - cve: CVE-2026-50629
+    upstream_fix_url: https://github.com/apache/cxf/commit/ca12d0973967663923c807f12de4499776f6b67c
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-50629
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-cxf/commit/f1a8fe4
+    basis: adapted
+    artifacts:
+      - org.apache.cxf:cxf-rt-rs-security-oauth2
+    note: New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00007 (backpatch-cxf@f1a8fe4).
+  - cve: CVE-2026-50630
+    upstream_fix_url: https://github.com/apache/cxf/commit/ca12d0973967663923c807f12de4499776f6b67c
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-50630
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-cxf/commit/f1a8fe4
+    basis: adapted
+    artifacts:
+      - org.apache.cxf:cxf-rt-rs-security-oauth2
+    note: New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00007 (backpatch-cxf@f1a8fe4).
 tests:
-  commit: ff75b5de932c4b29547ae2825510dad9ec9e6b6b
+  commit: f1a8fe4e914cde134f218546ebbb9de09d544437
   command: mvn -B -T1 -pl rt/transports/jms,services/xkms/xkms-x509-repo-ldap,systests/ldap,core,rt/databinding/aegis,rt/ws/rm,tools/common,tools/wsdlto/databinding/jaxb,rt/rs/security/oauth-parent/oauth2,systests/rs-security -am -DskipTests -Dmaven.test.skip.exec=true install, then mvn -B -T1 -pl rt/transports/jms,services/xkms/xkms-x509-repo-ldap,systests/ldap,core,rt/databinding/aegis,rt/ws/rm,tools/common,tools/wsdlto/databinding/jaxb,rt/rs/security/oauth-parent/oauth2,systests/rs-security -Dsurefire.timeout=900 -Dmaven.test.failure.ignore=true verify (azul/zulu-openjdk:8, Maven 3.9.16, Central through Moderne's cache; the line's modules' tests only)
   runtime: openjdk version 1.8.0_514 (Zulu, azul/zulu-openjdk:8 linux/arm64 container), Apache Maven 3.9.16
-  report: cxf-rt-rs-security-oauth2-3.5.11.1-backpatch-00006-tests.zip
-  report_sha256: a84928ddf5ca70d40c32dab25532a151ee68de1675a0175fdc14338bb4f7801a
+  report: cxf-rt-rs-security-oauth2-3.5.11.1-backpatch-00007-tests.zip
+  report_sha256: a2016734c91ca481ac22df25bb47f2122c981effae318251bbe25108360e7fae
   result: pass
-  note: "2008 tests at the patch commit, 9 of them skipped by the suite, 0 failed, 0 errors. Suite of record in a Linux container (release/cxf-3.5/SUITE-ENV.md) with upstream's test-only certificate renewals 13fc94bb3c and 0dcfe16bab (test keystores only) applied first; the expired testutils certificates turned 79 signed/SAML tests red on 3.5.11 itself. Accepted verifier finding A: 9 classes of Central's cxf-rt-rs-security-oauth2 3.5.11 sources jar are generated JPA metamodel *_ classes, not in the tree; no source this port changes."
+  note: "2021 tests at the patch commit, 9 of them skipped by the suite, 0 failed, 0 errors. Suite of record in a Linux container (release/cxf-3.5/SUITE-ENV.md) with upstream's test-only certificate renewals 13fc94bb3c and 0dcfe16bab (test keystores only) applied first; the expired testutils certificates turned 79 signed/SAML tests red on 3.5.11 itself. Accepted verifier finding A: 9 classes of Central's cxf-rt-rs-security-oauth2 3.5.11 sources jar are generated JPA metamodel *_ classes, not in the tree; no source this port changes. CVE-2026-50629's proof is AbstractTokenServiceLogTest, a test written by us (upstream has none); CVE-2026-50630's is upstream's AuthorizationUtilsTest. New-file headers: services/AbstractTokenServiceLogTest.java and services/AbstractTokenServiceTest.java have no file in their package, its parent packages or the module's src/test/java root; both headers are byte-identical to the nearest test file in the module, oauth2/client/OAuthClientUtilsTest.java, and AbstractTokenServiceTest.java's also to upstream's own copy at ca12d09739."
