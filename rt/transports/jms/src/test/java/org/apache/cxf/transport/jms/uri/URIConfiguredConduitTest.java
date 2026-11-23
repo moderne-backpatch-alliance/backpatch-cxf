@@ -18,7 +18,9 @@
  */
 package org.apache.cxf.transport.jms.uri;
 
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.cxf.Bus;
@@ -36,6 +38,7 @@ import org.apache.cxf.transport.jms.JMSMessageHeadersType;
 import org.apache.cxf.transport.jms.util.TestReceiver;
 import org.apache.cxf.ws.addressing.EndpointReferenceType;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -57,9 +60,19 @@ public class URIConfiguredConduitTest {
         async
     };
 
+    private static Connection brokerHold;
+
     @BeforeClass
-    public static void initConnectionFactory() {
+    public static void initConnectionFactory() throws JMSException {
         cf = new ActiveMQConnectionFactory(BROKER_URI);
+        // keeps the vm:// broker alive for the whole class, so no test connects while it is being disposed
+        brokerHold = cf.createConnection();
+        brokerHold.start();
+    }
+
+    @AfterClass
+    public static void closeBroker() throws JMSException {
+        brokerHold.close();
     }
 
     @Test
