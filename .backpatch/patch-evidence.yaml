@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 3.5.11.1-backpatch-00009
+release: 3.5.11.1-backpatch-00010
 baseline: v3.5.11+backpatch.baseline
 fixes:
   - cve: CVE-2025-48913
@@ -86,12 +86,20 @@ fixes:
     basis: backport
     artifacts:
       - org.apache.cxf:cxf-rt-rs-security-oauth2
-    note: New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00009 (backpatch-cxf@2a5e2b1).
+    note: Carried from 3.5.11.1-backpatch-00009; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00009 (backpatch-cxf@2a5e2b1).
+  - cve: CVE-2026-50628
+    upstream_fix_url: https://github.com/apache/cxf/commit/b35765daa4677fe1cbd5ef520b32750cc2ef44b3
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-50628
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-cxf/compare/e9444e3~1...3baf94c
+    basis: backport
+    artifacts:
+      - org.apache.cxf:cxf-rt-rs-security-oauth2
+    note: "New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00010 (backpatch-cxf@e9444e3..3baf94c). Behaviour change, loud: before this fix CXF's OAuth2 client-IP check was inverted, so a valid request from the IP address a token is bound to was refused with HTTP 403. It now admits that address and refuses a request from any other remote address (upstream's behaviour)."
 tests:
-  commit: 2a5e2b186e2f7c45861e1a6e03ec443c6cff4b33
+  commit: 3baf94c8abe8491b43c237fc7aee7968e93074f2
   command: mvn -B -T1 -pl rt/transports/jms,services/xkms/xkms-x509-repo-ldap,systests/ldap,core,rt/databinding/aegis,rt/ws/rm,tools/common,tools/wsdlto/databinding/jaxb,rt/rs/security/oauth-parent/oauth2,systests/rs-security -am -DskipTests -Dmaven.test.skip.exec=true install, then mvn -B -T1 -pl rt/transports/jms,services/xkms/xkms-x509-repo-ldap,systests/ldap,core,rt/databinding/aegis,rt/ws/rm,tools/common,tools/wsdlto/databinding/jaxb,rt/rs/security/oauth-parent/oauth2,systests/rs-security -Dsurefire.timeout=900 -Dmaven.test.failure.ignore=true verify (azul/zulu-openjdk:8, Maven 3.9.16, Central through Moderne's cache; the line's modules' tests only)
   runtime: openjdk version 1.8.0_514 (Zulu, azul/zulu-openjdk:8 linux/arm64 container), Apache Maven 3.9.16
-  report: cxf-rt-rs-security-oauth2-3.5.11.1-backpatch-00009-tests.zip
-  report_sha256: 44d92d33683da56855846ee7b2c08a438176acbf498e6f0ed5bbf265dc77fa65
+  report: cxf-rt-rs-security-oauth2-3.5.11.1-backpatch-00010-tests.zip
+  report_sha256: 12f0cc730492abe3cfe357278cf8db877f18921767c9997b47269fea72f2c898
   result: pass
-  note: 2026 tests at the patch commit, 9 of them skipped by the suite, 0 failed, 0 errors. Suite of record in a Linux container (release/cxf-3.5/SUITE-ENV.md) with upstream's test-only certificate renewals 13fc94bb3c and 0dcfe16bab (test keystores only) applied first; the expired testutils certificates turned 79 signed/SAML tests red on 3.5.11 itself.
+  note: "2028 tests at the patch commit, 9 of them skipped by the suite, 0 failed, 0 errors. Suite of record in a Linux container (release/cxf-3.5/SUITE-ENV.md) with upstream's test-only certificate renewals 13fc94bb3c and 0dcfe16bab (test keystores only) applied first; the expired testutils certificates turned 79 signed/SAML tests red on 3.5.11 itself. Release note: before this fix the client-IP check was inverted, so a valid request from the token's bound client IP got HTTP 403; it now admits that IP and rejects a different remote address (upstream's behaviour)."
