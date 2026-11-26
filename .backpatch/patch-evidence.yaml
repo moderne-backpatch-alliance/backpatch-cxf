@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 3.5.11.1-backpatch-00008
+release: 3.5.11.1-backpatch-00009
 baseline: v3.5.11+backpatch.baseline
 fixes:
   - cve: CVE-2025-48913
@@ -78,12 +78,20 @@ fixes:
     basis: backport
     artifacts:
       - org.apache.cxf:cxf-rt-rs-security-oauth2
-    note: New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00008 (backpatch-cxf@33cf926).
+    note: Carried from 3.5.11.1-backpatch-00008; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00008 (backpatch-cxf@33cf926).
+  - cve: CVE-2026-50623
+    upstream_fix_url: https://github.com/apache/cxf/commit/33fae1bc9597a06a7d74fc99ec930adac831d98c
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-50623
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-cxf/commit/2a5e2b1
+    basis: backport
+    artifacts:
+      - org.apache.cxf:cxf-rt-rs-security-oauth2
+    note: New in this release; ported onto 3.5.11; fixed at 3.5.11.1-backpatch-00009 (backpatch-cxf@2a5e2b1).
 tests:
-  commit: 33cf9268b7f193680d35b9224b8210723015edb1
+  commit: 2a5e2b186e2f7c45861e1a6e03ec443c6cff4b33
   command: mvn -B -T1 -pl rt/transports/jms,services/xkms/xkms-x509-repo-ldap,systests/ldap,core,rt/databinding/aegis,rt/ws/rm,tools/common,tools/wsdlto/databinding/jaxb,rt/rs/security/oauth-parent/oauth2,systests/rs-security -am -DskipTests -Dmaven.test.skip.exec=true install, then mvn -B -T1 -pl rt/transports/jms,services/xkms/xkms-x509-repo-ldap,systests/ldap,core,rt/databinding/aegis,rt/ws/rm,tools/common,tools/wsdlto/databinding/jaxb,rt/rs/security/oauth-parent/oauth2,systests/rs-security -Dsurefire.timeout=900 -Dmaven.test.failure.ignore=true verify (azul/zulu-openjdk:8, Maven 3.9.16, Central through Moderne's cache; the line's modules' tests only)
   runtime: openjdk version 1.8.0_514 (Zulu, azul/zulu-openjdk:8 linux/arm64 container), Apache Maven 3.9.16
-  report: cxf-rt-rs-security-oauth2-3.5.11.1-backpatch-00008-tests.zip
-  report_sha256: 03ff359da32580d342fa70bff7ca6731f0654c432a6dda7b101a510410fee841
+  report: cxf-rt-rs-security-oauth2-3.5.11.1-backpatch-00009-tests.zip
+  report_sha256: 44d92d33683da56855846ee7b2c08a438176acbf498e6f0ed5bbf265dc77fa65
   result: pass
-  note: "2022 tests at the patch commit, 9 of them skipped by the suite, 0 failed, 0 errors. Suite of record in a Linux container (release/cxf-3.5/SUITE-ENV.md) with upstream's test-only certificate renewals 13fc94bb3c and 0dcfe16bab (test keystores only) applied first; the expired testutils certificates turned 79 signed/SAML tests red on 3.5.11 itself. Accepted verifier finding A: 9 classes of Central's cxf-rt-rs-security-oauth2 3.5.11 sources jar are generated JPA metamodel *_ classes, not in the tree; no source this port changes."
+  note: 2026 tests at the patch commit, 9 of them skipped by the suite, 0 failed, 0 errors. Suite of record in a Linux container (release/cxf-3.5/SUITE-ENV.md) with upstream's test-only certificate renewals 13fc94bb3c and 0dcfe16bab (test keystores only) applied first; the expired testutils certificates turned 79 signed/SAML tests red on 3.5.11 itself.
